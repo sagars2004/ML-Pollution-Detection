@@ -1,0 +1,6 @@
+transformers
+torch
+scikit-learn
+opencv-python
+flask
+pytest
