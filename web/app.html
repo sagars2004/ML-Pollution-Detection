@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pollution Events Map</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map { height: 100vh; width: 100vw; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([37.8, -96], 4); 
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const points = [
+      { lat: 34.05, lng: -118.25, name: "Plastic spotted off LA coast" },
+      { lat: 40.71, lng: -74.01, name: "Oil spill near NY harbor" }
+    ];
+
+    points.forEach(p => {
+      L.marker([p.lat, p.lng]).addTo(map).bindPopup(p.name);
+    });
+  </script>
+</body>
+</html>
