@@ -1,31 +1,29 @@
-name: Deploy to S3
+name: 🚀 Deploy app.html to S3 (env workaround)
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Install AWS CLI
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y awscli
+      - name: Load .env and deploy to S3
+        run: |
+          # Parse .env values
+          AWS_ACCESS_KEY_ID=$(grep AWS_ACCESS_KEY_ID .env | cut -d '=' -f2)
+          AWS_SECRET_ACCESS_KEY=$(grep AWS_SECRET_ACCESS_KEY .env | cut -d '=' -f2)
+          AWS_REGION=$(grep AWS_REGION .env | cut -d '=' -f2)
 
-    - name: Load AWS credentials from env file and deploy
-      run: |
-        echo "Loading secrets from .env"
-        AWS_ACCESS_KEY_ID=$(grep AWS_ACCESS_KEY_ID .env | cut -d '=' -f2)
-        AWS_SECRET_ACCESS_KEY=$(grep AWS_SECRET_ACCESS_KEY .env | cut -d '=' -f2)
-        AWS_REGION=$(grep AWS_REGION .env | cut -d '=' -f2)
+          # Configure AWS CLI (already preinstalled on runner)
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+          aws configure set region $AWS_REGION
 
-        aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-        aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-        aws configure set default.region $AWS_REGION
-
-        aws s3 cp web/app.html s3://ml-pollution-frontend/app.html --acl public-read
+          # Deploy to S3
+          aws s3 cp web/app.html s3://ml-pollution-frontend/app.html --acl public-read
